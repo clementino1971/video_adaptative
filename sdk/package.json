@@ -18,7 +18,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile1": "tsc src/credential.ts src/event.ts src/logger.ts --outDir dist2/",
-    "compile2": "browserify dist2/myapp.js -o ../frontend/novoscript.js",
+    "compile2": "browserify dist2/myapp.js -o ../frontend/meuapp.js",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",

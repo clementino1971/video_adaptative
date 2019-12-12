@@ -24,30 +24,31 @@ let logger;
 let econtrols;
 let emedia;
 
+
+//Aqui para autenticar
 CredentialManager.login(email, password).then(({ token })=>{
 	logger = new Logger(email, token);
-	logger.
 	econtrols = new Event();
 	emedia = new Event();
 });
+let trackQAtual = 0
 
 // Adaptation Strategy
 evaluator.evaluate = (tracks) => {
 	// if first select the lower variant
-	selected = tracks[0]
-	
+	selected = tracks[4]
 
 	/*
 	 * Insert here you adaptation strategy
 	 */
 
-	return selected
+	return selected;
 }
 
 function initApp() {
 	// Install built-in polyfills to patch browser incompatibilities.
 	shaka.polyfill.installAll();
-	
+
 	// Check to see if the browser supports the basic APIs Shaka needs.
 	if (shaka.Player.isBrowserSupported()) {
 		// Everything looks good!
@@ -62,28 +63,28 @@ function initPlayer() {
 	// Create a Player instance.
 	var video = document.getElementById('video');
 	var player = new shaka.Player(video);
-	
+
 	// Attach player to the window to make it easy to access in the JS console.
 	window.player = player;
 	// Attach evaluator to player to manage useful variables
 	player.evaluator = evaluator;
-	
-	
+
+
 	// create a timer
 	timer = new shaka.util.Timer(onTimeCollectStats)
 	//stats = new shaka.util.Stats(video)
-	
-	
+
+
 	video.addEventListener('ended', onPlayerEndedEvent)
 	video.addEventListener('play', onPlayerPlayEvent)
 	video.addEventListener('pause', onPlayerPauseEvent)
 	video.addEventListener('progress', onPlayerProgressEvent)
-	
+
 	// // Listen for error events.
 	player.addEventListener('error', onErrorEvent);
 	// player.addEventListener('onstatechange',onStateChangeEvent);
 	// player.addEventListener('buffering', onBufferingEvent);
-	
+
 	// configure player: see https://github.com/google/shaka-player/blob/master/docs/tutorials/config.md
 	player.configure({
 		abr: {
@@ -115,7 +116,7 @@ function initPlayer() {
 
 
 		evaluator.currentTrack = selectedTrack
-		
+
 		console.log('options: ', tracks)
 		console.log('selected: ', evaluator.currentTrack);
 		this.lastTimeChosenMs_ = Date.now();
@@ -145,6 +146,8 @@ function onPlayerPlayEvent(play){
 }
 
 function onPlayerPauseEvent(pause){
+	econtrols.push('pause', 1.0)
+	logger.info('pause', {})
 	console.log('Video pause hit', pause);
 }
 
