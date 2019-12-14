@@ -1,5 +1,3 @@
-
-
 // myapp.js
 var stats;
 var timer;
@@ -18,8 +16,8 @@ const { Logger } = require('./src/logger');
 const { Event } = require('./src/event');
 const { CredentialManager } = require('./src/credential');
 
-const email = 'icc453@icomp';
-const password = 'batman';
+const email = 'thailsson.clementino@icomp.ufam.edu.br';
+const password = '1thailsson2';
 let logger;
 let econtrols;
 let emedia;
@@ -30,13 +28,14 @@ CredentialManager.login(email, password).then(({ token })=>{
 	logger = new Logger(email, token);
 	econtrols = new Event();
 	emedia = new Event();
-});
+	}
+);
 let trackQAtual = 0
 
 // Adaptation Strategy
 evaluator.evaluate = (tracks) => {
 	// if first select the lower variant
-	selected = tracks[4]
+	selected = tracks[0]
 
 	/*
 	 * Insert here you adaptation strategy
@@ -107,18 +106,22 @@ function initPlayer() {
 		let currentBandwidth = this.bandwidthEstimator_.getBandwidthEstimate(
 			this.config_.defaultBandwidthEstimate); //banda atual.
 
-		console.log('tracks: ', this.variants_)
+		console.log('Banda ???? ',currentBandwidth);
+
+		//console.log('tracks: ', this.variants_)
 		const selectedTrack = evaluator.evaluate(tracks)
+
+
 		/* BUFFEEEEEEEEEEEEEEERRR */
-		console.warn(video.buffered);
+		//console.warn(video.buffered);
 		if(video.buffered.length > 0)
 			console.warn('Buffer range', video.buffered.start(0), video.buffered.end(0));
 
 
 		evaluator.currentTrack = selectedTrack
 
-		console.log('options: ', tracks)
-		console.log('selected: ', evaluator.currentTrack);
+		//console.log('options: ', tracks)
+		console.log('selected: ', evaluator.currentTrack.video.height);
 		this.lastTimeChosenMs_ = Date.now();
 		return evaluator.currentTrack;
 	}
@@ -142,13 +145,13 @@ function onPlayerEndedEvent(ended) {
 }
 
 function onPlayerPlayEvent(play){
-	console.log('Video play hit', play);
+	console.log('Video play hit');
 }
 
 function onPlayerPauseEvent(pause){
-	econtrols.push('pause', 1.0)
-	logger.info('pause', {})
-	console.log('Video pause hit', pause);
+	//econtrols.push('pause', 1.0)
+	//logger.info('pause', {})
+	console.log('Video pause hit');
 }
 
 function onPlayerProgressEvent(event) {

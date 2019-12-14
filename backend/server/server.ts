@@ -27,8 +27,6 @@ export class Server{
         this.application=restify.createServer({
           name:'log-api',
           version:'1.0.0',
-          certificate: fs.readFileSync('./security/keys/cert.pem'),
-          key:fs.readFileSync('./security/keys/key.pem')
         })
 
         this.application.use(restify.plugins.queryParser())

@@ -12,5 +12,5 @@ export declare class Logger implements iLogger {
     warn(primaryMessage: string, ...supportingData: any[]): void;
     error(primaryMessage: string, ...supportingData: any[]): void;
     info(primaryMessage: string, ...supportingData: any[]): void;
-    private emitLogMessage(msgType, msg, supportingDetails);
+    private emitLogMessage;
 }

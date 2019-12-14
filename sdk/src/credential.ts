@@ -8,6 +8,7 @@ export class CredentialManager {
     set token(token) { this._token = token}
 
     public static login(email:string, password:string): Promise<CredentialManager> {
+        console.log("Já tá aqui brabo");
         var body = {
             'email':email,
             'password':password
