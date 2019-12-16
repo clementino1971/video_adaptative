@@ -6,6 +6,7 @@ import {mergePatchBodyParser} from "./merge-patch.parser"
 import {handleError} from "./error.handler"
 import {tokenParser} from "../security/token.parser"
 import * as fs from 'fs'
+import * as corsMiddleware from "restify-cors-middleware"
 
 export class Server{
   application: restify.Server
@@ -24,11 +25,20 @@ export class Server{
   initRouters(routers:Router[]):Promise<any>{
     return new Promise((resolve,reject)=>{
       try{
+        const cors = corsMiddleware({
+              origins: ["*"],
+              allowHeaders: ["Authorization"],
+              exposeHeaders: ["Authorization"]
+        });
         this.application=restify.createServer({
           name:'log-api',
-          version:'1.0.0',
+          version:'1.0.0'//,
+          //certificate: fs.readFileSync('./security/keys/cert.pem'),
+          //key:fs.readFileSync('./security/keys/key.pem')
         })
+        this.application.pre(cors.preflight)
 
+        this.application.use(cors.actual)
         this.application.use(restify.plugins.queryParser())
         this.application.use(restify.plugins.bodyParser())
         this.application.use(mergePatchBodyParser)

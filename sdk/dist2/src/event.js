@@ -8,15 +8,16 @@ var Event = /** @class */ (function () {
     Event.prototype.set = function (key, records) {
         this.logs.set(key, records);
     };
+    Event.prototype.setS = function (key, records) {
+        this.logs.set(key, records);
+    };
     Event.prototype.get = function (key) {
         return this.logs.get(key);
     };
     Event.prototype.push = function (key, value) {
-        var isExist = key in this.logs;
-        if (isExist) {
-            var records = this.logs.get(key);
-            if (records !== undefined)
-                records.push(value);
+        var records = this.logs.get(key);
+        if (records !== undefined) {
+            records.push(value);
         }
         else {
             this.logs.set(key, [value]);

@@ -36,12 +36,21 @@ var Logger = /** @class */ (function () {
         this.emitLogMessage("info", primaryMessage, supportingData);
     };
     Logger.prototype.emitLogMessage = function (msgType, msg, supportingDetails) {
+        var mapa = supportingDetails[0];
+        var iterador = mapa.entries();
+        var obj = {};
+        var aux = iterador.next().value;
+        while (aux !== undefined) {
+            obj[aux[0]] = aux[1];
+            aux = iterador.next().value;
+        }
         var body = { 'msgType': msgType,
             'msg': msg,
             'userId': this.userId,
             'sessionId': this.sessionId,
-            'log': supportingDetails[0]
+            'log': obj
         };
+        console.warn('Sending...', body);
         console.log(JSON.stringify(body));
         node_fetch_1["default"](environment_1.environment.log.url + '/events', {
             headers: { "Content-Type": "application/json; charset=utf-8",

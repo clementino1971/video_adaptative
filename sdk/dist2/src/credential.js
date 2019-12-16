@@ -12,7 +12,6 @@ var CredentialManager = /** @class */ (function () {
         configurable: true
     });
     CredentialManager.login = function (email, password) {
-        console.log("Já tá aqui brabo");
         var body = {
             'email': email,
             'password': password

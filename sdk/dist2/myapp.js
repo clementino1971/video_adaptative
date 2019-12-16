@@ -1,7 +1,18 @@
 // myapp.js
+var f = true;
+var qualidades = [];
+var stalls = [];
 var stats;
 var timer;
-var manifestUri = 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd';
+
+videos = [
+	'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd',
+	'http://rdmedia.bbc.co.uk/dash/ondemand/elephants_dream/1/client_manifest-all.mpd'
+]
+
+contentID = 0;
+
+var manifestUri = videos[contentID];
 // var manifestUri = 'https://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd';
 
 // if disabled, you can choose variants using player.selectVariantTrack(track: Variant, clearBuffer: boolean)
@@ -17,20 +28,27 @@ const { Event } = require('./src/event');
 const { CredentialManager } = require('./src/credential');
 
 const email = 'thailsson.clementino@icomp.ufam.edu.br';
-const password = '1thailsson2';
+const password = '1thailsson.clementino2';
 let logger;
-let econtrols;
-let emedia;
+let events;
 let curBandwidth = -1;
 
 
 //Aqui para autenticar
 CredentialManager.login(email, password).then(({ token })=>{
 	logger = new Logger(email, token);
-	econtrols = new Event();
-	emedia = new Event();
-	}
-);
+	infos = new Event();
+	infos.set('ContentID',contentID);
+	infos.set('TechID',0);
+	logger.info('Informações:', infos.dump());
+	events = new Event();
+	console.log("Login Realizado!");
+}).catch( error => {
+	console.log("Erro ao logar");
+	throw error;
+});
+
+
 let trackQAtual = 0
 
 // Adaptation Strategy
@@ -49,7 +67,11 @@ evaluator.evaluate = (tracks,currentBandwidth) => {
     console.log('Curbanda = ',curBandwidth);
     console.log('Video escolhido tem banda ',tracks[esc]['bandwidth'])
 
-	selected = tracks[esc]
+		selected = tracks[esc];
+		events.push('qualidade',esc);
+		qualidades.push(esc);
+		events.push('bandwidth',currentBandwidth);
+
     return selected;
 }
 
@@ -72,26 +94,31 @@ function initPlayer() {
     var video = document.getElementById('video');
     var player = new shaka.Player(video);
 
+
     // Attach player to the window to make it easy to access in the JS console.
     window.player = player;
     // Attach evaluator to player to manage useful variables
     player.evaluator = evaluator;
-
+		inicio = new Date();
 
     // create a timer
     timer = new shaka.util.Timer(onTimeCollectStats)
     //stats = new shaka.util.Stats(video)
-
-
+		console.log('timer:' , timer)
     video.addEventListener('ended', onPlayerEndedEvent)
     video.addEventListener('play', onPlayerPlayEvent)
     video.addEventListener('pause', onPlayerPauseEvent)
     video.addEventListener('progress', onPlayerProgressEvent)
+		video.onwaiting = function(stall){
+												console.error('Video stalled.', stall);
+												stalls.push(video.currentTime)
+												if(events){
+													events.push('Stall',video.currentTime)
+												}
+											};
 
     // // Listen for error events.
     player.addEventListener('error', onErrorEvent);
-    // player.addEventListener('onstatechange',onStateChangeEvent);
-    // player.addEventListener('buffering', onBufferingEvent);
 
     // configure player: see https://github.com/google/shaka-player/blob/master/docs/tutorials/config.md
     player.configure({
@@ -115,7 +142,7 @@ function initPlayer() {
         let currentBandwidth = this.bandwidthEstimator_.getBandwidthEstimate(
             this.config_.defaultBandwidthEstimate); //banda atual.
 
-        console.log('Banda ???? ',currentBandwidth);
+        console.log('Banda == ',currentBandwidth);
 
         //console.log('tracks: ', this.variants_)
         const selectedTrack = evaluator.evaluate(tracks,currentBandwidth)
@@ -130,7 +157,6 @@ function initPlayer() {
         evaluator.currentTrack = selectedTrack
 
         //console.log('options: ', tracks)
-        console.log('selected: ', evaluator.currentTrack.video.height);
         this.lastTimeChosenMs_ = Date.now();
         return evaluator.currentTrack;
     }
@@ -146,30 +172,45 @@ function initPlayer() {
 
 function onPlayerEndedEvent(ended) {
     console.log('Video playback ended', ended);
-    if(logger){
-        logger.info('Apenas informando', {}); //(MENSAGEM,{} QUALQUER COISA)
-        //VERIFICAR LOGGER.TS PARA VER OS MÉTODOS E TAL.
-    }
+		console.warn("Tempos em que aconteceram stalls:",stalls);
+		console.warn("Histórico de qualidades:",qualidades);
+
+		if(logger){
+				events.push('ended',video.currentTime);
+        logger.info('Eventos:', events.dump());
+				console.error("Logs Enviados!!!");
+    }else{
+				console.error("Log não foram enviados!!!");
+		}
+
     timer.stop();
 }
 
 function onPlayerPlayEvent(play){
     console.log('Video play hit');
+		events.push("play",video.currentTime);
 }
 
 function onPlayerPauseEvent(pause){
-    //econtrols.push('pause', 1.0)
-    //logger.info('pause', {})
+    events.push('pause',video.currentTime);
     console.log('Video pause hit');
 }
 
 function onPlayerProgressEvent(event) {
-    console.log('Progress Event: ', event);
+		fim = new Date();
+		if(f){
+			events.push('SDelay',(fim.getTime() - inicio.getTime())/1000);
+			console.warn('SDelay:',(fim.getTime() - inicio.getTime())/1000);
+			f = false;
+		}
+		events.push('progress',video.currentTime)
+    //console.log('Progress Event:', event);
 }
 
 function onErrorEvent(event) {
     // Extract the shaka.util.Error object from the event.
     onError(event.detail);
+		events.push('Error', event);
 }
 
 function onError(error) {
@@ -196,6 +237,5 @@ function onBufferingEvent(buffering){
 function bufferingEvent(buffering){
     console.log("Buffering: ", buffering);
 }
-
 
 document.addEventListener('DOMContentLoaded', initApp);

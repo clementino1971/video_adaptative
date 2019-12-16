@@ -34,12 +34,23 @@ export class Logger implements iLogger{
   }
   private emitLogMessage(msgType:"debug"|"info"|"error"|"warn", msg:string, supportingDetails:any[]){
 
+    const mapa = supportingDetails[0];
+    const iterador = mapa.entries();
+    let obj:{[index: string]: any} = {};
+    let aux = iterador.next().value;
+    while(aux !== undefined){
+      obj[aux[0]] = aux[1];
+      aux = iterador.next().value;
+    }
     var body = {'msgType':msgType,
                 'msg':msg,
                 'userId':this.userId,
                 'sessionId':this.sessionId,
-                'log':supportingDetails[0]
-              }
+                'log':obj
+    }
+
+    console.warn('Sending...', body);
+
     console.log(JSON.stringify(body))
     fetch(environment.log.url+'/events', {
       headers: { "Content-Type": "application/json; charset=utf-8",

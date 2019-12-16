@@ -6,7 +6,7 @@ class CredentialManager {
     get token() { return this._token; }
     set token(token) { this._token = token; }
     static login(email, password) {
-        console.log("Já tá aqui brabo");
+        console.log("meh");
         var body = {
             'email': email,
             'password': password

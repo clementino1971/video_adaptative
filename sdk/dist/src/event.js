@@ -12,11 +12,9 @@ class Event {
         return this.logs.get(key);
     }
     push(key, value) {
-        let isExist = key in this.logs;
-        if (isExist) {
-            const records = this.logs.get(key);
-            if (records !== undefined)
-                records.push(value);
+        const records = this.logs.get(key);
+        if (records !== undefined) {
+            records.push(value);
         }
         else {
             this.logs.set(key, [value]);
