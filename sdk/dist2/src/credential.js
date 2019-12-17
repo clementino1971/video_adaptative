@@ -24,7 +24,7 @@ var CredentialManager = /** @class */ (function () {
             })
                 .then(function (response) { return response.json(); })
                 .then(function (json) {
-                console.log(json['accessToken']);
+                console.warn(json['accessToken']);
                 var credential = new CredentialManager();
                 credential._token = json['accessToken'];
                 resolve(credential);

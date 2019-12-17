@@ -1,5 +1,6 @@
 // myapp.js
 var f = true;
+var bandas = [];
 var qualidades = [];
 var stalls = [];
 var stats;
@@ -10,7 +11,7 @@ videos = [
 	'http://rdmedia.bbc.co.uk/dash/ondemand/elephants_dream/1/client_manifest-all.mpd'
 ]
 
-contentID = 0;
+contentID = 1;
 
 var manifestUri = videos[contentID];
 // var manifestUri = 'https://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd';
@@ -39,8 +40,8 @@ CredentialManager.login(email, password).then(({ token })=>{
 	logger = new Logger(email, token);
 	infos = new Event();
 	infos.set('ContentID',contentID);
-	infos.set('TechID',0);
-	logger.info('Informações:', infos.dump());
+	infos.set('TechID',1);
+	logger.info('Informacoes:', infos.dump());
 	events = new Event();
 	console.log("Login Realizado!");
 }).catch( error => {
@@ -68,9 +69,12 @@ evaluator.evaluate = (tracks,currentBandwidth) => {
     console.log('Video escolhido tem banda ',tracks[esc]['bandwidth'])
 
 		selected = tracks[esc];
-		events.push('qualidade',esc);
-		qualidades.push(esc);
-		events.push('bandwidth',currentBandwidth);
+		if(events){
+			events.push('qualidade',esc);
+			events.push('bandwidth',currentBandwidth);
+			bandas.push(currentBandwidth);
+			events.push('BSwitch',tracks[esc]['bandwidth']);
+		}
 
     return selected;
 }
@@ -104,7 +108,7 @@ function initPlayer() {
     // create a timer
     timer = new shaka.util.Timer(onTimeCollectStats)
     //stats = new shaka.util.Stats(video)
-		console.log('timer:' , timer)
+		//console.log('timer:' , timer)
     video.addEventListener('ended', onPlayerEndedEvent)
     video.addEventListener('play', onPlayerPlayEvent)
     video.addEventListener('pause', onPlayerPauseEvent)
@@ -166,8 +170,29 @@ function initPlayer() {
     player.load(manifestUri).then(function() {
         // This runs if the asynchronous load is successful.
         console.log('The video has now been loaded!');
-
     }).catch(onError);  // onError is executed if the asynchronous load fails.
+
+
+}
+
+//Função para calcular o desvio padrão e a média da Banda;
+function stts(){
+	var sum = 0;
+	for(var i=0;i<bandas.length;i++){
+		sum += bandas[i];
+	}
+
+	Bmedia = sum/bandas.length;
+
+	sum = 0;
+	for(var i=0;i<bandas.length;i++){
+		sum += Math.pow(Bmedia - bandas[i],2);
+	}
+
+	BdesvioPadrao = Math.sqrt(sum/(bandas.length -1));
+
+	events.push('statistic',Bmedia);
+	events.push('statistic',BdesvioPadrao);
 }
 
 function onPlayerEndedEvent(ended) {
@@ -176,6 +201,7 @@ function onPlayerEndedEvent(ended) {
 		console.warn("Histórico de qualidades:",qualidades);
 
 		if(logger){
+				stts();
 				events.push('ended',video.currentTime);
         logger.info('Eventos:', events.dump());
 				console.error("Logs Enviados!!!");
@@ -198,12 +224,14 @@ function onPlayerPauseEvent(pause){
 
 function onPlayerProgressEvent(event) {
 		fim = new Date();
-		if(f){
-			events.push('SDelay',(fim.getTime() - inicio.getTime())/1000);
-			console.warn('SDelay:',(fim.getTime() - inicio.getTime())/1000);
-			f = false;
+		if(events){
+			if(f){
+				events.push('SDelay',(fim.getTime() - inicio.getTime())/1000);
+				console.warn('SDelay:',(fim.getTime() - inicio.getTime())/1000);
+				f = false;
+			}
+			events.push('progress',video.currentTime);
 		}
-		events.push('progress',video.currentTime)
     //console.log('Progress Event:', event);
 }
 

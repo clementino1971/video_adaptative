@@ -21,7 +21,7 @@ export class CredentialManager {
             })
                 .then(response=>response.json())
                 .then(json=>{
-                    console.log(json['accessToken'])
+                    console.warn(json['accessToken'])
                     const credential = new CredentialManager()
                     credential._token=json['accessToken']
                     resolve(credential)
