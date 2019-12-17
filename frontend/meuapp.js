@@ -50,9 +50,11 @@ CredentialManager.login(email, password).then(({ token })=>{
 	infos = new Event();
 	infos.set('ContentID',contentID);
 	infos.set('TechID',1);
-	logger.info('Informacoes:', infos.dump());
+	//logger.info('Informacoes:', infos.dump());
+	logger.getLogs();
 	events = new Event();
 	console.log("Login Realizado!");
+
 }).catch( error => {
 	console.log("Erro ao logar");
 	throw error;
@@ -328,9 +330,6 @@ var Event = /** @class */ (function () {
     Event.prototype.set = function (key, records) {
         this.logs.set(key, records);
     };
-    Event.prototype.setS = function (key, records) {
-        this.logs.set(key, records);
-    };
     Event.prototype.get = function (key) {
         return this.logs.get(key);
     };
@@ -413,6 +412,19 @@ var Logger = /** @class */ (function () {
             body: JSON.stringify(body)
         }).then(function (response) { return response.json(); })
             .then(function (json) { return console.log(json); })["catch"](function (error) {
+        });
+    };
+    Logger.prototype.getLogs = function () {
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        node_fetch_1["default"](environment_1.environment.log.url + '/events?id=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YWFzQGljb21wLnVmYW0uZWR1LmJyIiwiaXNzIjoiaWNjNDUzLWxvZ2dlci1hcGkiLCJpYXQiOjE1NzY0NjE0Mjd9.v8OOd0044000nUHcxfOJxmenec_5jKC4HoIfn6Nh1eo', {
+            headers: {
+                /* "Content-Type": "application/json; charset=utf-8", */
+                "Authorization": "Bearer " + this.sessionId
+            },
+            method: 'GET'
+        }).then(function (response) { return response.json(); })
+            .then(function (json) { return console.log(json); })["catch"](function (error) {
+            console.log("QOTA", error);
         });
     };
     return Logger;

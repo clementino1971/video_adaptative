@@ -6,7 +6,6 @@ class CredentialManager {
     get token() { return this._token; }
     set token(token) { this._token = token; }
     static login(email, password) {
-        console.log("meh");
         var body = {
             'email': email,
             'password': password
@@ -19,7 +18,7 @@ class CredentialManager {
             })
                 .then(response => response.json())
                 .then(json => {
-                console.log(json['accessToken']);
+                console.warn(json['accessToken']);
                 const credential = new CredentialManager();
                 credential._token = json['accessToken'];
                 resolve(credential);

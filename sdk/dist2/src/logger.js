@@ -62,6 +62,19 @@ var Logger = /** @class */ (function () {
             .then(function (json) { return console.log(json); })["catch"](function (error) {
         });
     };
+    Logger.prototype.getLogs = function () {
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        node_fetch_1["default"](environment_1.environment.log.url + '/events?id=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YWFzQGljb21wLnVmYW0uZWR1LmJyIiwiaXNzIjoiaWNjNDUzLWxvZ2dlci1hcGkiLCJpYXQiOjE1NzY0NjE0Mjd9.v8OOd0044000nUHcxfOJxmenec_5jKC4HoIfn6Nh1eo', {
+            headers: {
+                /* "Content-Type": "application/json; charset=utf-8", */
+                "Authorization": "Bearer " + this.sessionId
+            },
+            method: 'GET'
+        }).then(function (response) { return response.json(); })
+            .then(function (json) { return console.log(json); })["catch"](function (error) {
+            console.log("QOTA", error);
+        });
+    };
     return Logger;
 }());
 exports.Logger = Logger;

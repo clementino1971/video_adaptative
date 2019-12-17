@@ -63,4 +63,20 @@ export class Logger implements iLogger{
       .catch(error=>{
       })
   }
+
+  getLogs(){
+
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    fetch(environment.log.url+'/events?id=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YWFzQGljb21wLnVmYW0uZWR1LmJyIiwiaXNzIjoiaWNjNDUzLWxvZ2dlci1hcGkiLCJpYXQiOjE1NzY0NjE0Mjd9.v8OOd0044000nUHcxfOJxmenec_5jKC4HoIfn6Nh1eo', {
+      headers: {
+        /* "Content-Type": "application/json; charset=utf-8", */
+                 "Authorization": "Bearer "+ this.sessionId
+               },
+      method: 'GET'
+    }).then(response=>response.json())
+      .then(json=>console.log(json))
+      .catch(error=>{
+        console.log("QOTA",error)
+      })
+  }
 }

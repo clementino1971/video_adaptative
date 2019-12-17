@@ -47,6 +47,22 @@ class Logger {
             .catch(error => {
         });
     }
+    getLogs() {
+        var body = {
+            'userId': this.userId,
+            'sessionId': this.sessionId
+        };
+        node_fetch_1.default(environment_1.environment.log.url + '/events', {
+            headers: { "Content-Type": "application/json; charset=utf-8",
+                "Authorization": "Bearer " + this.sessionId
+            },
+            method: 'GET',
+            body: JSON.stringify(body)
+        }).then(response => response.json())
+            .then(json => console.log(json))
+            .catch(error => {
+        });
+    }
 }
 exports.Logger = Logger;
 //# sourceMappingURL=logger.js.map

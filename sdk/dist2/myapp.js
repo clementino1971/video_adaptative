@@ -41,9 +41,11 @@ CredentialManager.login(email, password).then(({ token })=>{
 	infos = new Event();
 	infos.set('ContentID',contentID);
 	infos.set('TechID',1);
-	logger.info('Informacoes:', infos.dump());
+	//logger.info('Informacoes:', infos.dump());
+	logger.getLogs();
 	events = new Event();
 	console.log("Login Realizado!");
+
 }).catch( error => {
 	console.log("Erro ao logar");
 	throw error;

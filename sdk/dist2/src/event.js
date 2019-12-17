@@ -8,9 +8,6 @@ var Event = /** @class */ (function () {
     Event.prototype.set = function (key, records) {
         this.logs.set(key, records);
     };
-    Event.prototype.setS = function (key, records) {
-        this.logs.set(key, records);
-    };
     Event.prototype.get = function (key) {
         return this.logs.get(key);
     };

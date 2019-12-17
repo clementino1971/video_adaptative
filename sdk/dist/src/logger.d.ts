@@ -13,4 +13,5 @@ export declare class Logger implements iLogger {
     error(primaryMessage: string, ...supportingData: any[]): void;
     info(primaryMessage: string, ...supportingData: any[]): void;
     private emitLogMessage;
+    getLogs(): void;
 }

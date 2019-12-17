@@ -14,10 +14,6 @@ export class Event implements iEvent{
       this.logs.set(key,records)
   }
 
-  setS(key:string, records:string):void{
-      this.logs.set(key,records)
-  }
-
   get(key:string):[number]|undefined{
       return this.logs.get(key)
   }
